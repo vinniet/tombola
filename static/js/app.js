@@ -112,6 +112,11 @@ class TombolaTracker {
     }
 
     attachEventListeners() {
+        // Random draw button
+        document.getElementById('random-draw-btn').addEventListener('click', () => {
+            this.randomDraw();
+        });
+
         // Voice toggle button
         document.getElementById('voice-toggle-btn').addEventListener('click', () => {
             this.toggleVoice();
@@ -185,6 +190,27 @@ class TombolaTracker {
             }
         } catch (error) {
             this.showMessage('Error drawing number: ' + error.message, 'error');
+        }
+    }
+
+    async randomDraw() {
+        try {
+            const response = await fetch('/api/status');
+            const data = await response.json();
+            
+            if (data.available_numbers.length === 0) {
+                this.showMessage('All numbers have been drawn!', 'info');
+                return;
+            }
+
+            // Pick a random number from available numbers
+            const randomIndex = Math.floor(Math.random() * data.available_numbers.length);
+            const randomNumber = data.available_numbers[randomIndex];
+            
+            // Draw the random number
+            await this.drawNumber(randomNumber);
+        } catch (error) {
+            this.showMessage('Error with random draw: ' + error.message, 'error');
         }
     }
 
@@ -353,7 +379,7 @@ class TombolaTracker {
 
         setTimeout(() => {
             messageDiv.classList.remove('show');
-        }, 5000);
+        }, 15000);
     }
 
     showNumberPopup(number) {
@@ -371,10 +397,10 @@ class TombolaTracker {
             this.announceNumber(number);
         }
         
-        // Hide after 3 seconds
+        // Hide after 10 seconds
         setTimeout(() => {
             popup.classList.remove('show');
-        }, 3000);
+        }, 10000);
     }
 
     toggleVoice() {
