@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  tombolav2:
+    build: .
+    container_name: tombolav2
+    ports:
+      - "5000:5000"
+    volumes:
+      # Mount data directory for persistence
+      - ./data:/app/data
+      # Mount tombola_data.json for persistence
+      - ./tombola_data.json:/app/tombola_data.json
+    environment:
+      - FLASK_ENV=production
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    networks:
+      - tombola-network
+
+networks:
+  tombola-network:
+    driver: bridge
