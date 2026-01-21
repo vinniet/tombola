@@ -1,33 +1,15 @@
-# Use Python 3.11 slim image as base
-FROM python:3.11-slim
+# Use an official Python runtime as a parent image
+FROM python:3.10-slim
 
-# Set working directory in container
-WORKDIR /app
+# Set the working directory in the container
+WORKDIR /share/CACHEDEV1_DATA/Web/tombola
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    FLASK_APP=app.py
-
-# Install system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy requirements first for better caching
-COPY requirements.txt .
-
-# Install Python dependencies
+# Copy the requirements file and install dependencies
+COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
+# Copy the rest of the application code into the container
 COPY . .
 
-# Create directory for data persistence
-RUN mkdir -p /app/data
-
-# Expose port 5000
-EXPOSE 5000
-
-# Run the application
-CMD ["python", "app.py"]
+# Define the command to run the Python script when the container starts
+CMD ["python", "./app.py"]
