@@ -117,12 +117,12 @@ class TombolaTracker {
             this.randomDraw();
         });
 
-        // Keyboard shortcut: R key for random draw
+        // Keyboard shortcuts: R key or Spacebar for random draw
         document.addEventListener('keydown', (e) => {
-            // Check if R key is pressed and not in an input field
-            if ((e.key === 'r' || e.key === 'R') &&
+            // Check if R key or Spacebar is pressed and not in an input field
+            if (((e.key === 'r' || e.key === 'R' || e.key === ' ') &&
                 e.target.tagName !== 'INPUT' &&
-                e.target.tagName !== 'TEXTAREA') {
+                e.target.tagName !== 'TEXTAREA')) {
                 e.preventDefault();
                 this.randomDraw();
             }
