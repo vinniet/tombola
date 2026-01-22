@@ -117,6 +117,17 @@ class TombolaTracker {
             this.randomDraw();
         });
 
+        // Keyboard shortcut: R key for random draw
+        document.addEventListener('keydown', (e) => {
+            // Check if R key is pressed and not in an input field
+            if ((e.key === 'r' || e.key === 'R') &&
+                e.target.tagName !== 'INPUT' &&
+                e.target.tagName !== 'TEXTAREA') {
+                e.preventDefault();
+                this.randomDraw();
+            }
+        });
+
         // Voice toggle button
         document.getElementById('voice-toggle-btn').addEventListener('click', () => {
             this.toggleVoice();
