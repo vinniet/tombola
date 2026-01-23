@@ -5,6 +5,7 @@ class TombolaTracker {
         this.drawnNumbers = [];
         this.socket = null;
         this.voiceEnabled = false;
+        this.lastDrawnNumber = null;
         this.italianNumbers = {
             1: 'uno', 2: 'due', 3: 'tre', 4: 'quattro', 5: 'cinque',
             6: 'sei', 7: 'sette', 8: 'otto', 9: 'nove', 10: 'dieci',
@@ -57,11 +58,13 @@ class TombolaTracker {
         this.socket.on('number_drawn', (data) => {
             console.log('Number drawn:', data);
             this.drawnNumbers = data.drawn_numbers;
+            this.lastDrawnNumber = data.number;
             this.updateStats(data.total_drawn, data.remaining);
             this.updateBoard();
             this.updateRecentNumbers();
             this.playDrawAnimation(data.number);
             this.showNumberPopup(data.number);
+            this.enableRepeatButton();
         });
 
         // Handle game reset by another client
@@ -115,6 +118,11 @@ class TombolaTracker {
         // Random draw button
         document.getElementById('random-draw-btn').addEventListener('click', () => {
             this.randomDraw();
+        });
+
+        // Repeat last button
+        document.getElementById('repeat-last-btn').addEventListener('click', () => {
+            this.repeatLast();
         });
 
         // Keyboard shortcuts: R key or Spacebar for random draw
@@ -193,8 +201,10 @@ class TombolaTracker {
             const data = await response.json();
 
             if (response.ok) {
+                this.lastDrawnNumber = number;
                 this.showMessage(`Number ${number} drawn successfully!`, 'success');
                 this.showNumberPopup(number);
+                this.enableRepeatButton();
                 // State will be updated via WebSocket
             } else {
                 this.showMessage(data.error, 'error');
@@ -465,6 +475,24 @@ class TombolaTracker {
         };
 
         window.speechSynthesis.speak(italianUtterance);
+    }
+
+    repeatLast() {
+        if (this.lastDrawnNumber === null) {
+            this.showMessage('No number to repeat', 'info');
+            return;
+        }
+
+        // Show popup and announce the last drawn number
+        this.showNumberPopup(this.lastDrawnNumber);
+        this.showMessage(`Repeating number ${this.lastDrawnNumber}`, 'info');
+    }
+
+    enableRepeatButton() {
+        const btn = document.getElementById('repeat-last-btn');
+        btn.disabled = false;
+        btn.classList.remove('btn-secondary');
+        btn.classList.add('btn-info');
     }
 }
 
